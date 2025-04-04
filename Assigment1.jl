@@ -61,17 +61,27 @@ using MLJBase
 # ╔═╡ 48b90fb9-5667-47c4-815a-1405f956331d
 PlutoUI.TableOfContents()
 
+# ╔═╡ 7b8818a3-ef13-4c51-a94f-843c4afa92ee
+md"# Problem 1: Regression model"
+
 # ╔═╡ 89ce94b2-1d21-4c52-990b-cad4a23d6527
 md"## Data Exploration"
 
 # ╔═╡ 7f86992d-243f-453f-81f4-6bd10e03c18e
+# Load the dataset
 dataframe = DataFrame(CSV.File("global_food_wastage_dataset.csv", header=1))
 
 # ╔═╡ 5503bc5e-3343-4d9f-bdbe-f4c7ea81b895
+# Check the coloumns
 names(dataframe)
 
+# ╔═╡ 61f0d3f6-3530-43bb-a5b4-7067ca10c2ad
+md"## Data Preparation"
+
 # ╔═╡ 2ea91355-84eb-4777-a201-01d3d3b669d1
-rename!(dataframe, "Economic Loss (Million \$)" => "Economic_Loss" ,"Household Waste (%)" => "Household_Waste", "Avg Waste per Capita (Kg)" => "Avg_Waste")
+
+# renaming coloumns
+rename!(dataframe, "Economic Loss (Million \$)" => "Economic_Loss" ,"Household Waste (%)" => "Household_Waste", "Avg Waste per Capita (Kg)" => "Avg_Waste","Population (Million)"=>"Population_Million","Total Waste (Tons)"=>"Total_Waste_Tons")
 
 # ╔═╡ 381906e8-8090-4214-b9af-9832c8129f3b
 # ╠═╡ disabled = true
@@ -80,6 +90,7 @@ missing_count = sum(ismissing.(dataframe.Household_Waste))
   ╠═╡ =#
 
 # ╔═╡ 7eb2524b-2d6e-4601-ae0f-9f5a3a16fafa
+# Check the describe
 describe(dataframe)
 
 # ╔═╡ 9c4cf9ac-1763-41af-92c4-990469185511
@@ -94,9 +105,12 @@ df_clean = unique(dataframe)
 
 
 # ╔═╡ 655e0d31-fe71-4ae3-8cbe-b10133333b94
+
+# ploting some variable
 data(df_clean) * mapping(:Avg_Waste, stack=:Country, color=:Country) * histogram(bins=range(10,80, 10)) |> draw()
 
 # ╔═╡ efeed71d-2fb3-47f2-aa58-d63b04319b41
+# Splitting data into training and testing sets
 train_idx, test_idx = partition(1:nrow(df_clean), 0.85) 
 
 # ╔═╡ 641d0643-795f-4038-b3fd-9d81e8d3721c
@@ -108,35 +122,58 @@ test_data = dataframe[test_idx, :]
 # ╔═╡ 4f1ad3f4-01bd-4c79-90ce-608b96e5b7b0
 md"## Models"
 
-# ╔═╡ e13a6457-0e17-4a8a-b7c5-cd9071f8b56f
-model = lm(@formula(Household_Waste ~ Economic_Loss), train_data)
+# ╔═╡ 8aee59ae-92d2-49a4-8254-8e97cfe7c920
+model_fruit_loss = lm(@formula(Economic_Loss ~ Total_Waste_Tons + Avg_Waste + Population_Million),train_data )
 
-# ╔═╡ d307d863-04a2-4c44-ac23-ba0a55c8b705
-display(model)
+
+# ╔═╡ 5b7e78ab-43b8-460f-96d3-c77b901a8dad
+model_dairy_waste = lm(@formula(Household_Waste ~ Total_Waste_Tons + Avg_Waste + Population_Million), train_data)
+
+
+# ╔═╡ 96b6471d-d2ce-4696-8a6c-7572f6680e5b
+begin
+
+println("R² (Fruit Loss Model): ", r2(model_fruit_loss))
+println("R² (Dairy Waste Model): ", r2(model_dairy_waste))
+end
+
+
+# ╔═╡ 4f88cd2e-dea9-4e93-921b-5c18f2843f97
+begin
+cor(train_data.Household_Waste, train_data.Economic_Loss)
+end
+
+# ╔═╡ b7768afc-210e-4da7-81ee-4d0a98838060
+println("R² Score: ", r2(model_fruit_loss))
+
+
+# ╔═╡ 2c01c88d-fd1e-43b5-98d0-fcbc8a303cbb
+predictions = GLM.predict(model_fruit_loss, train_data)  # Use GLM.predict
+
 
 # ╔═╡ 7ebf7f9e-1b25-40da-9f04-f4354fcc04df
 
 
 # ╔═╡ a0b49a1f-ea7c-4cb7-9cc8-4c5825b9416e
-r2(model)
+r2(model_fruit_loss)
 
 # ╔═╡ 11cd03ef-ac2b-4c55-9e80-a75eb7a92e88
 begin
-println("Coefficients: ", coef(model))  # Print model coefficients
-println("R²: ", r2(model))  # R² (coefficient of determination)
-println("RMSE: ", sqrt(deviance(model) / nobs(model)))  # Root Mean Square Error (RMSE)
+println("Coefficients: ", coef(model_fruit_loss))  # Print model coefficients
+println("R²: ", r2(model_fruit_loss))  # R² (coefficient of determination)
+println("RMSE: ", sqrt(deviance(model_fruit_loss) / nobs(model_fruit_loss)))  # Root Mean Square Error (RMSE)
 
 end
 
 # ╔═╡ 1d9d9fa7-5160-4b2f-a372-67d3c9487549
-test_data.predicted = GLM.predict(model, test_data)
+test_data.predicted = GLM.predict(model_fruit_loss, test_data)
 
 # ╔═╡ b62bb57e-8e01-4840-a3ae-78588a434b8d
 
 
 # ╔═╡ 5c7eb87f-666b-4f4e-9120-c386693b2161
 # R² Score
-println("R²: ", r2(model))
+println("R²: ", r2(model_fruit_loss))
 
 # ╔═╡ 14f0e485-e395-48f0-8069-856e8ae918b4
 begin
@@ -2686,9 +2723,11 @@ version = "3.6.0+0"
 # ╠═48b90fb9-5667-47c4-815a-1405f956331d
 # ╠═f91d74b7-9d3d-41cb-b0d0-2e817b0d40b6
 # ╠═be819082-9aef-4acd-8954-283b2178a4a4
+# ╠═7b8818a3-ef13-4c51-a94f-843c4afa92ee
 # ╠═89ce94b2-1d21-4c52-990b-cad4a23d6527
 # ╠═7f86992d-243f-453f-81f4-6bd10e03c18e
 # ╠═5503bc5e-3343-4d9f-bdbe-f4c7ea81b895
+# ╠═61f0d3f6-3530-43bb-a5b4-7067ca10c2ad
 # ╠═2ea91355-84eb-4777-a201-01d3d3b669d1
 # ╠═381906e8-8090-4214-b9af-9832c8129f3b
 # ╠═7eb2524b-2d6e-4601-ae0f-9f5a3a16fafa
@@ -2700,8 +2739,12 @@ version = "3.6.0+0"
 # ╠═641d0643-795f-4038-b3fd-9d81e8d3721c
 # ╠═f78d6784-3577-4db7-915e-e452a48a411b
 # ╠═4f1ad3f4-01bd-4c79-90ce-608b96e5b7b0
-# ╠═e13a6457-0e17-4a8a-b7c5-cd9071f8b56f
-# ╠═d307d863-04a2-4c44-ac23-ba0a55c8b705
+# ╠═8aee59ae-92d2-49a4-8254-8e97cfe7c920
+# ╠═5b7e78ab-43b8-460f-96d3-c77b901a8dad
+# ╠═96b6471d-d2ce-4696-8a6c-7572f6680e5b
+# ╠═4f88cd2e-dea9-4e93-921b-5c18f2843f97
+# ╠═b7768afc-210e-4da7-81ee-4d0a98838060
+# ╠═2c01c88d-fd1e-43b5-98d0-fcbc8a303cbb
 # ╠═f343adce-21d8-478a-896b-b07b239395ec
 # ╠═7ebf7f9e-1b25-40da-9f04-f4354fcc04df
 # ╠═a0b49a1f-ea7c-4cb7-9cc8-4c5825b9416e
