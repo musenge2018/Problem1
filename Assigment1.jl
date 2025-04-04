@@ -133,8 +133,8 @@ model_dairy_waste = lm(@formula(Household_Waste ~ Total_Waste_Tons + Avg_Waste +
 # ╔═╡ 96b6471d-d2ce-4696-8a6c-7572f6680e5b
 begin
 
-println("R² (Fruit Loss Model): ", r2(model_fruit_loss))
-println("R² (Dairy Waste Model): ", r2(model_dairy_waste))
+println("R² (Economic_Loss Loss Model): ", r2(model_fruit_loss))
+println("R² (Household Waste Model): ", r2(model_dairy_waste))
 end
 
 
@@ -147,9 +147,15 @@ end
 println("R² Score: ", r2(model_fruit_loss))
 
 
+# ╔═╡ e8403a98-5378-45b2-ba6e-6eef416224c3
+
+
 # ╔═╡ 2c01c88d-fd1e-43b5-98d0-fcbc8a303cbb
+# ╠═╡ disabled = true
+#=╠═╡
 predictions = GLM.predict(model_fruit_loss, train_data)  # Use GLM.predict
 
+  ╠═╡ =#
 
 # ╔═╡ 7ebf7f9e-1b25-40da-9f04-f4354fcc04df
 
@@ -2744,6 +2750,7 @@ version = "3.6.0+0"
 # ╠═96b6471d-d2ce-4696-8a6c-7572f6680e5b
 # ╠═4f88cd2e-dea9-4e93-921b-5c18f2843f97
 # ╠═b7768afc-210e-4da7-81ee-4d0a98838060
+# ╠═e8403a98-5378-45b2-ba6e-6eef416224c3
 # ╠═2c01c88d-fd1e-43b5-98d0-fcbc8a303cbb
 # ╠═f343adce-21d8-478a-896b-b07b239395ec
 # ╠═7ebf7f9e-1b25-40da-9f04-f4354fcc04df
