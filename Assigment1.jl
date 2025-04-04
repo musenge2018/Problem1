@@ -79,9 +79,6 @@ rename!(dataframe, "Economic Loss (Million \$)" => "Economic_Loss" ,"Household W
 missing_count = sum(ismissing.(dataframe.Household_Waste))
   ╠═╡ =#
 
-# ╔═╡ cffd41b4-cd79-4c3e-8235-a422cbfcf2bc
-missin2_count = sum(ismissing.(dataframe))
-
 # ╔═╡ 7eb2524b-2d6e-4601-ae0f-9f5a3a16fafa
 describe(dataframe)
 
@@ -108,6 +105,9 @@ train_data = df_clean[train_idx, :]
 # ╔═╡ f78d6784-3577-4db7-915e-e452a48a411b
 test_data = dataframe[test_idx, :]
 
+# ╔═╡ 4f1ad3f4-01bd-4c79-90ce-608b96e5b7b0
+md"## Models"
+
 # ╔═╡ e13a6457-0e17-4a8a-b7c5-cd9071f8b56f
 model = lm(@formula(Household_Waste ~ Economic_Loss), train_data)
 
@@ -130,6 +130,9 @@ end
 
 # ╔═╡ 1d9d9fa7-5160-4b2f-a372-67d3c9487549
 test_data.predicted = GLM.predict(model, test_data)
+
+# ╔═╡ b62bb57e-8e01-4840-a3ae-78588a434b8d
+
 
 # ╔═╡ 5c7eb87f-666b-4f4e-9120-c386693b2161
 # R² Score
@@ -156,9 +159,6 @@ hlines!(ax, [0], color=:red, linestyle=:dash, label="Zero Line")
 fig
 
 end
-
-# ╔═╡ d11d7ac3-c5e5-428e-a2cb-7dfae0343656
-md"## Saving Models"
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -2691,7 +2691,6 @@ version = "3.6.0+0"
 # ╠═5503bc5e-3343-4d9f-bdbe-f4c7ea81b895
 # ╠═2ea91355-84eb-4777-a201-01d3d3b669d1
 # ╠═381906e8-8090-4214-b9af-9832c8129f3b
-# ╠═cffd41b4-cd79-4c3e-8235-a422cbfcf2bc
 # ╠═7eb2524b-2d6e-4601-ae0f-9f5a3a16fafa
 # ╠═9c4cf9ac-1763-41af-92c4-990469185511
 # ╠═935e4219-6064-4496-8db8-704fe31fad0a
@@ -2700,6 +2699,7 @@ version = "3.6.0+0"
 # ╠═efeed71d-2fb3-47f2-aa58-d63b04319b41
 # ╠═641d0643-795f-4038-b3fd-9d81e8d3721c
 # ╠═f78d6784-3577-4db7-915e-e452a48a411b
+# ╠═4f1ad3f4-01bd-4c79-90ce-608b96e5b7b0
 # ╠═e13a6457-0e17-4a8a-b7c5-cd9071f8b56f
 # ╠═d307d863-04a2-4c44-ac23-ba0a55c8b705
 # ╠═f343adce-21d8-478a-896b-b07b239395ec
@@ -2707,8 +2707,8 @@ version = "3.6.0+0"
 # ╠═a0b49a1f-ea7c-4cb7-9cc8-4c5825b9416e
 # ╠═11cd03ef-ac2b-4c55-9e80-a75eb7a92e88
 # ╠═1d9d9fa7-5160-4b2f-a372-67d3c9487549
+# ╠═b62bb57e-8e01-4840-a3ae-78588a434b8d
 # ╠═5c7eb87f-666b-4f4e-9120-c386693b2161
 # ╠═14f0e485-e395-48f0-8069-856e8ae918b4
-# ╠═d11d7ac3-c5e5-428e-a2cb-7dfae0343656
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
